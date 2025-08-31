@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+:root {
+  /* Dark theme palette with deeper browns */
+  --background: #0f0d0a; /* much darker brownish background */
+  --surface: #151210; /* darker panels/cards */
+  --surface-2: #1a1613; /* darker chips/inputs */
+  --surface-hover: #1f1b17; /* darker hover state */
+  --border: rgba(255, 255, 255, 0.06);
+
+  --text: #c8c4bf; /* grey for body text */
+  --text-dim: #a9a39d; /* dimmer text */
+  --text-soft: #e6e0d9; /* dull off-white for headers */
+
+  --accent: #f5d90a; /* yellow accent */
+  --accent-foreground: #201a11; /* text on yellow */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-mono: var(--font-mono);
+  --font-display: var(--font-display);
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  color: var(--text-soft);
+}
+
+/* Basic typography for generated content */
+.content article { line-height: 1.65; }
+.content h2 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.content h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+.content p {
+  margin: 0.5rem 0;
+}
+
+/* Chip style */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 9999px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+.chip:hover { background: var(--surface-hover); }
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+/* Buttons and inputs */
+.field {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: 9999px; /* capsule */
+  padding: 0.5rem 0.75rem;
+  outline: none;
+}
+.field::placeholder { color: var(--text-dim); }
+.field:focus { box-shadow: 0 0 0 3px rgba(245, 217, 10, 0.25); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: 9999px; /* capsule */
+}
+.btn:hover { background: var(--surface-hover); }
+
+.btn-accent {
+  border: 1px solid #d8c308;
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+.btn-accent:hover { filter: brightness(0.98); }
+
+/* Links */
+a { color: var(--text-soft); }
+a:hover { color: var(--accent); }
+
+/* Menu items (e.g. autocomplete) */
+.menu-item { border-radius: 8px; }
+.menu-item:hover { background: var(--surface-hover); }

@@ -1,0 +1,85 @@
+    return [
+      `Editorial, Pinterest-aesthetic hero image of "${title}".`,
+      "Artful composition, soft natural light, shallow depth of field,",
+      "rich color grading, organic textures, tasteful negative space,",
+      "cinematic look, highly detailed, no text, no watermark, no borders.",
+      "Clean background, evocative mood, professional photography style.",
+      "Aspect ratio 16:9.",
+      context,
+    ].join(" ");
+  }
+
+  useEffect(() => {
+    if (!article || coverImg) return;
+    const { title, lead } = extractTitleAndLead(article);
+    const t = title || subject;
+    if (!t) return;
+    if (requestedFor === t) return;
+    let aborted = false;
+    (async () => {
+      try {
+        setCoverLoading(true);
+        setCoverError(null);
+        setRequestedFor(t);
+        const res = await fetch("/api/images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: buildAestheticPrompt(t, lead), count: 1 }),
+        });
+        if (!res.ok) {
+          const j = await res.json().catch(() => null);
+          throw new Error(j?.error || `Request failed (${res.status})`);
+        }
+        const data = (await res.json()) as { images?: string[] };
+        if (!aborted) setCoverImg((data.images || [])[0] || null);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Image generation failed";
+        if (!aborted) setCoverError(msg);
+      } finally {
+        if (!aborted) setCoverLoading(false);
+      }
+    })();
+    return () => { aborted = true; };
+  }, [article, subject, requestedFor, coverImg]);
+
+  return (
+    <section className="card p-6 content">
+      <div className="text-sm opacity-70 mb-2">{name ?? "NewtWiki"}</div>
+      <ReactMarkdown
+        components={{
+          h1: ({ children, ...props }) => {
+            const text = String(children);
+            const id = text
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, "")
+              .trim()
+              .replace(/\s+/g, "-");
+            return (
+              <div>
+                <h1 id={id} className="text-3xl font-bold mb-4 pb-2 border-b border-white/10" {...props}>{children}</h1>
+                {coverImg ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={coverImg} alt={`Illustration: ${text}`} className="mt-4 w-full rounded-lg border border-white/10" />
+                ) : coverLoading ? (
+                  <div className="mt-4 text-xs opacity-60">Generating cover image…</div>
+                ) : coverError ? (
+                  <div className="mt-4 text-xs text-red-300">{coverError}</div>
+                ) : null}
+              </div>
+            );
+          },
+          a: ({ href, children, ...props }) => {
+            if (!href) return <span {...props}>{children}</span>;
+            return (
+              <a href={`/visit/${encodeURIComponent(href)}`} onClick={(e) => { e.preventDefault(); goto(href.toString()); }} {...props}>
+                {children}
+              </a>
+            );
+          },
+        }}
+      >
+        {article}
+      </ReactMarkdown>
+    </section>
+  );
+}
